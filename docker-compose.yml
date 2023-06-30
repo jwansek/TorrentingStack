@@ -1,0 +1,59 @@
+version: "2.1"
+
+services:
+    transmission-openvpn:
+        sysctls:
+            - net.ipv6.conf.all.disable_ipv6=0
+        cap_add:
+            - NET_ADMIN
+        volumes:
+            - /root/netherlands.ovpn:/etc/openvpn/custom/default.ovpn
+            - ./transmission/:/data/
+            - /media/SpinningRust/Videos/Radarr:/mnt/Videos/Radarr
+            - /media/SpinningRust/Videos/Sonarr:/mnt/Videos/Sonarr
+        env_file:
+            - ./transmission.env
+        dns:
+            - 8.8.8.8
+        logging:
+            driver: json-file
+            options:
+                max-size: 10m
+        ports:
+            - 9092:9091
+        image: haugene/transmission-openvpn
+
+    sonarr:
+        image: lscr.io/linuxserver/sonarr:latest
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Europe/London
+        volumes:
+            - /media/SpinningRust/Videos/Sonarr:/mnt/Videos/Sonarr
+            - ./sonarrconf:/config
+        ports:
+            - 8989:8989
+
+    prowlarr:
+        image: lscr.io/linuxserver/prowlarr:latest
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Europe/London
+        volumes:
+            - ./prowlarrconf:/config
+        ports:
+            - 9696:9696
+
+    radarr:
+        image: lscr.io/linuxserver/radarr:latest
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Europe/London
+        volumes:
+            - ./radarrconf:/config
+            - /media/SpinningRust/Videos/Radarr:/mnt/Videos/Radarr
+        ports:
+            - 7878:7878

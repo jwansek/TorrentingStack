@@ -1,0 +1,5 @@
+transmission.env
+*conf/*.*
+*conf/*/
+transmission/*.*
+transmission/*/
